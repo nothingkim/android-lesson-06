@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
 
 // @Service 어노테이션을 통해 이 클래스가 서비스임을 선언합니다.
 @Service
@@ -29,4 +30,8 @@ public class TextDataService {
         return userDataRepository.findAll();
     }
 
+    public TextDataDto getTextById(Long id) {
+        Optional<TextDataDto> optionalTextData = userDataRepository.findById(id);
+        return optionalTextData.orElse(null);
+    }
 }

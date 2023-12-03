@@ -9,17 +9,22 @@
 </ul>
 </body>
 <script>
-         (async () => {
-            const response = await fetch('/api/v1/data/list');
-            const result = await response.json();
-            console.log(result);
-            for (let i = 0; i < result.length; i++) {
-                let li = document.createElement("li");
-                li.appendChild(document.createTextNode(result[i].text));
-                document.getElementById("dataList").appendChild(li);
-            }
-        })()
-</script>
-</html>
+    (async () => {
+        const response = await fetch('/api/v1/data/list');
+        const result = await response.json();
+        console.log(result);
+        for (let i = 0; i < result.length; i++) {
+            let li = document.createElement("li");
+            li.appendChild(document.createTextNode(result[i].text));
+
+            // Add download link for each text
+            let downloadLink = document.createElement("a");
+            downloadLink.href = '/api/v1/data/download/' + result[i].id;
+            downloadLink.innerHTML = " 다운로드 ";
+            li.appendChild(downloadLink);
+
+            document.getElementById("dataList").appendChild(li);
+        }
+    })()
 </script>
 </html>

@@ -7,6 +7,9 @@ import kr.easw.lesson06.model.dto.UserDataEntity;
 import kr.easw.lesson06.service.TextDataService;
 import kr.easw.lesson06.service.UserDataService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -27,5 +30,20 @@ public class DataRestEndpoint {
     @GetMapping("/list")
     public List<TextDataDto> listText() {
         return textDataService.listText();
+    }
+
+    @GetMapping("/download/{id}")
+    public ResponseEntity<ByteArrayResource> downloadText(@PathVariable Long id) {
+        TextDataDto textData = textDataService.getTextById(id);
+
+        // Create a ByteArrayResource from the text data
+        ByteArrayResource resource = new ByteArrayResource(textData.getText().getBytes());
+
+        // Build the response entity with the content, headers, and status
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=text.txt")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .contentLength(textData.getText().getBytes().length)
+                .body(resource);
     }
 }
