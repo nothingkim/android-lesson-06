@@ -2,13 +2,10 @@ package kr.easw.lesson06.service;
 
 import jakarta.annotation.Nullable;
 import jakarta.annotation.PostConstruct;
-import kr.easw.lesson06.model.dto.ExceptionalResultDto;
 import kr.easw.lesson06.model.dto.UserAuthenticationDto;
 import kr.easw.lesson06.model.dto.UserDataEntity;
 import kr.easw.lesson06.model.repository.UserDataRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,9 +16,10 @@ import java.util.Optional;
 @AllArgsConstructor
 public class UserDataService {
     private final UserDataRepository repository;
-    private final BCryptPasswordEncoder encoder;
-    private final JwtService jwtService;
 
+    private final BCryptPasswordEncoder encoder;
+
+    private final JwtService jwtService;
 
     // @PostConstruct 어노테이션을 사용하여 이 메서드가 빈 생성 후에 실행되도록 합니다.
     @PostConstruct
@@ -50,18 +48,11 @@ public class UserDataService {
         Optional<UserDataEntity> entity = repository.findUserDataEntityByUserId(userDataEntity.getUserId());
         if (entity.isEmpty()) throw new BadCredentialsException("Credentials invalid");
         UserDataEntity archivedEntity = entity.get();
-        // 만약 유저가 존재한다면, 비밀 번호를 비교합니다.
+        // 만약 유저가 존재한다면, 비밀번호를 비교합니다.
         if (encoder.matches(userDataEntity.getPassword(), archivedEntity.getPassword()))
             // 만약 비밀번호가 일치한다면, 토큰을 생성하여 반환합니다.
             return new UserAuthenticationDto(jwtService.generateToken(archivedEntity.getUserId()));
         // 만약 비밀번호가 일치하지 않는다면, BadCredentialsException을 던집니다.
         throw new BadCredentialsException("Credentials invalid");
     }
-
-    public void registerUser(UserDataEntity entity) {
-        // Attempt to register the user
-        repository.save(entity);
-    }
 }
-
-
