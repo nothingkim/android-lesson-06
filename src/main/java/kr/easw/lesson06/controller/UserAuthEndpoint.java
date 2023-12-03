@@ -5,6 +5,7 @@ import kr.easw.lesson06.model.dto.UserAuthenticationDto;
 import kr.easw.lesson06.model.dto.UserDataEntity;
 import kr.easw.lesson06.service.UserDataService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,10 +33,15 @@ public class UserAuthEndpoint {
 
 
     @PostMapping("/register")
-    public void register(UserDataEntity entity) {
-        // 유저 회원가입을 구현하십시오.
-        // 해당 메서드를 작성하기 위해서는, UserDataService와 admin_dashboard.html을 참고하십시오.
-        // 해당 메서드는 register.html에서 사용됩니다.
-        throw new IllegalStateException("Not implemented yet");
+    public ResponseEntity<Object> register(@RequestBody UserDataEntity entity) {
+        try {
+            // 회원가입을 시도하고 성공하면 201 Created를 반환합니다.
+            // 실패할 경우는 UserDataService에서 예외가 발생하므로, 그에 따른 처리를 해줍니다.
+            userDataService.registerUser(entity);
+            return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
+        } catch (Exception ex) {
+            // 회원가입에 실패했다면, 400 Bad Request를 반환합니다.
+            return ResponseEntity.badRequest().body(new ExceptionalResultDto(ex.getMessage()));
+        }
     }
 }
